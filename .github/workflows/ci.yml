@@ -1,0 +1,34 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_API_URL: /api/v1
+      VITE_APP_NAME: TaskFlow
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t taskflow-frontend:test .
